@@ -1,0 +1,188 @@
+Here's a detailed line-by-line explanation of your K-Nearest Neighbors (KNN) classification code for Task 6 using the Iris dataset:
+
+ 1. Importing Required Libraries
+python
+Copy
+Edit
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+numpy: For numerical operations like arrays and math.
+
+pandas: For handling datasets in tabular form.
+
+matplotlib.pyplot: For plotting charts and graphs.
+
+seaborn: High-level wrapper for matplotlib, improves visual aesthetics.
+
+python
+Copy
+Edit
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from matplotlib.colors import ListedColormap
+load_iris: Loads the Iris dataset.
+
+train_test_split: Splits data into training and testing.
+
+StandardScaler: Normalizes feature values.
+
+KNeighborsClassifier: Main algorithm for KNN.
+
+accuracy_score, confusion_matrix, classification_report: Evaluation metrics.
+
+ListedColormap: Used for coloring decision boundaries.
+
+ 2. Loading the Dataset
+python
+Copy
+Edit
+iris = load_iris()
+X = iris.data
+y = iris.target
+feature_names = iris.feature_names
+target_names = iris.target_names
+Loads the Iris dataset.
+
+X: Contains the input features (4 in total).
+
+y: Target class labels (0 = Setosa, 1 = Versicolor, 2 = Virginica).
+
+feature_names: Names of the 4 input features.
+
+target_names: Names of target classes.
+
+ 3. Splitting the Dataset
+python
+Copy
+Edit
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+Splits data into:
+
+70% training set
+
+30% test set
+
+random_state=42 ensures reproducibility.
+
+ 4. Normalizing the Features
+python
+Copy
+Edit
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+Normalization is crucial in KNN as it relies on distances between points.
+
+StandardScaler: Scales data to mean = 0 and std = 1.
+
+ 5. Training & Evaluating the Model
+python
+Copy
+Edit
+k_values = [1, 3, 5, 7]
+for k in k_values:
+    model = KNeighborsClassifier(n_neighbors=k)
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+Loops through different values of k (number of neighbors).
+
+Trains KNN model.
+
+Makes predictions on the test set.
+
+python
+Copy
+Edit
+    print(f"\n🔢 K = {k}")
+    print("Accuracy:", accuracy_score(y_test, y_pred))
+    print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+    print("Classification Report:\n", classification_report(y_test, y_pred, target_names=target_names))
+Prints performance metrics:
+
+Accuracy
+
+Confusion Matrix
+
+Classification Report (Precision, Recall, F1-score)
+
+ 6. Visualizing Decision Boundaries
+python
+Copy
+Edit
+def plot_decision_boundary(X, y, k=3):
+    X = X[:, :2]  # use only first 2 features
+To visualize decision boundaries in 2D, only the first two features are used.
+
+python
+Copy
+Edit
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+    scaler = StandardScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
+Split and normalize again using only 2 features for plotting.
+
+python
+Copy
+Edit
+    model = KNeighborsClassifier(n_neighbors=k)
+    model.fit(X_train, y_train)
+Trains KNN classifier for the given k.
+
+python
+Copy
+Edit
+    x_min, x_max = X_train[:, 0].min() - 1, X_train[:, 0].max() + 1
+    y_min, y_max = X_train[:, 1].min() - 1, X_train[:, 1].max() + 1
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.02),
+                         np.arange(y_min, y_max, 0.02))
+Creates a grid to plot decision boundaries.
+
+python
+Copy
+Edit
+    Z = model.predict(np.c_[xx.ravel(), yy.ravel()])
+    Z = Z.reshape(xx.shape)
+Predicts the class for every point in the grid.
+
+python
+Copy
+Edit
+    cmap_light = ListedColormap(['#FFAAAA', '#AAFFAA', '#AAAAFF'])
+    cmap_bold = ListedColormap(['#FF0000', '#00FF00', '#0000FF'])
+Defines color maps for background and data points.
+
+python
+Copy
+Edit
+    plt.figure(figsize=(8, 6))
+    plt.contourf(xx, yy, Z, cmap=cmap_light)
+    plt.scatter(X_train[:, 0], X_train[:, 1], c=y_train, cmap=cmap_bold, edgecolor='k', s=40)
+    plt.title(f"KNN Decision Boundary (k={k}) using 2 Features")
+    plt.xlabel(feature_names[0])
+    plt.ylabel(feature_names[1])
+    plt.show()
+Plots the decision boundary and the training points.
+
+ 7. Call the Function
+python
+Copy
+Edit
+plot_decision_boundary(X, y, k=5)
+Calls the function to visualize the KNN decision boundary with k=5.
+
+
+This code demonstrates a complete machine learning pipeline:
+
+Load data
+
+Preprocess (split + scale)
+
+Train & evaluate multiple models
+
+Visualize decision boundaries
